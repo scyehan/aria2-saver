@@ -5,7 +5,7 @@ struct Aria2SaverApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @ObservedObject var downloadManager: DownloadManager
 
-    init() {
+    @MainActor init() {
         self._downloadManager = ObservedObject(wrappedValue: DownloadManager.shared)
     }
 

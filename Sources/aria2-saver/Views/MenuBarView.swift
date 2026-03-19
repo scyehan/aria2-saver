@@ -3,7 +3,7 @@ import SwiftUI
 struct MenuBarView: View {
     @ObservedObject var manager: DownloadManager
 
-    init() {
+    @MainActor init() {
         self._manager = ObservedObject(wrappedValue: DownloadManager.shared)
     }
 
