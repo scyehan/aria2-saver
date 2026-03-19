@@ -136,27 +136,20 @@ final class DownloadManager: ObservableObject {
         }
     }
 
-    private func updateItem(gid: String, with info: [String: Any]) {
+    private func updateItem(gid: String, with info: Aria2StatusInfo) {
         guard let index = activeDownloads.firstIndex(where: { $0.id == gid }) else { return }
 
-        let statusStr = info["status"] as? String ?? ""
-        let status = DownloadStatus(rawValue: statusStr) ?? .error
-        let totalLength = Int64(info["totalLength"] as? String ?? "0") ?? 0
-        let completedLength = Int64(info["completedLength"] as? String ?? "0") ?? 0
-        let downloadSpeed = Int64(info["downloadSpeed"] as? String ?? "0") ?? 0
+        let status = DownloadStatus(rawValue: info.status) ?? .error
 
-        if let files = info["files"] as? [[String: Any]],
-           let first = files.first,
-           let path = first["path"] as? String,
-           !path.isEmpty {
+        if let path = info.filePath, let name = info.fileName {
             activeDownloads[index].filePath = path
-            activeDownloads[index].filename = (path as NSString).lastPathComponent
+            activeDownloads[index].filename = name
         }
 
         activeDownloads[index].status = status
-        activeDownloads[index].totalLength = totalLength
-        activeDownloads[index].completedLength = completedLength
-        activeDownloads[index].downloadSpeed = downloadSpeed
+        activeDownloads[index].totalLength = info.totalLength
+        activeDownloads[index].completedLength = info.completedLength
+        activeDownloads[index].downloadSpeed = info.downloadSpeed
 
         if status.isFinished {
             let wasComplete = status == .complete

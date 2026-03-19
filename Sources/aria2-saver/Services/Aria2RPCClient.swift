@@ -5,6 +5,15 @@ struct Aria2RPCError: Error, LocalizedError {
     var errorDescription: String? { message }
 }
 
+struct Aria2StatusInfo: Sendable {
+    let status: String
+    let totalLength: Int64
+    let completedLength: Int64
+    let downloadSpeed: Int64
+    let filePath: String?
+    let fileName: String?
+}
+
 struct Aria2RPCClient: Sendable {
 
     private static let statusKeys = [
@@ -21,13 +30,29 @@ struct Aria2RPCClient: Sendable {
         return gid
     }
 
-    func tellStatus(backend: Aria2Backend, gid: String) async throws -> [String: Any] {
+    func tellStatus(backend: Aria2Backend, gid: String) async throws -> Aria2StatusInfo {
         let params: [any Sendable] = buildParams(backend: backend, extra: [gid, Self.statusKeys])
         let result = try await call(backend: backend, method: "aria2.tellStatus", params: params)
         guard let dict = result as? [String: Any] else {
             throw Aria2RPCError(message: "Unexpected response from aria2")
         }
-        return dict
+        var filePath: String?
+        var fileName: String?
+        if let files = dict["files"] as? [[String: Any]],
+           let first = files.first,
+           let path = first["path"] as? String,
+           !path.isEmpty {
+            filePath = path
+            fileName = (path as NSString).lastPathComponent
+        }
+        return Aria2StatusInfo(
+            status: dict["status"] as? String ?? "",
+            totalLength: Int64(dict["totalLength"] as? String ?? "0") ?? 0,
+            completedLength: Int64(dict["completedLength"] as? String ?? "0") ?? 0,
+            downloadSpeed: Int64(dict["downloadSpeed"] as? String ?? "0") ?? 0,
+            filePath: filePath,
+            fileName: fileName
+        )
     }
 
     func remove(backend: Aria2Backend, gid: String) async throws {

@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct MenuBarView: View {
-    @ObservedObject var manager = DownloadManager.shared
+    @ObservedObject var manager: DownloadManager
+
+    init() {
+        self._manager = ObservedObject(wrappedValue: DownloadManager.shared)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

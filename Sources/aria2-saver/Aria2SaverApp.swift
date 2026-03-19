@@ -3,7 +3,11 @@ import SwiftUI
 @main
 struct Aria2SaverApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @ObservedObject var downloadManager = DownloadManager.shared
+    @ObservedObject var downloadManager: DownloadManager
+
+    init() {
+        self._downloadManager = ObservedObject(wrappedValue: DownloadManager.shared)
+    }
 
     var body: some Scene {
         MenuBarExtra {
