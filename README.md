@@ -11,7 +11,7 @@ A lightweight macOS menu bar app that acts as a browser proxy for aria2. Routes 
 - Multiple aria2 backend support with per-backend configuration
 - Real-time download progress in the menu bar
 - Download history with per-backend tabs
-- Path auto-completion from history (6 entries per backend)
+- Path auto-completion from history (10 entries per backend)
 - Open completed files via SMB in Finder
 - Download from clipboard via menu or global hotkey (`⌘⇧D`)
 - YAML-based configuration

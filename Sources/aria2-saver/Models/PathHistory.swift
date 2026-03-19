@@ -3,7 +3,7 @@ import Foundation
 struct PathHistory: Codable {
     var paths: [String] = []
 
-    static let maxCount = 6
+    static let maxCount = 10
 
     mutating func add(_ path: String) {
         paths.removeAll { $0 == path }
