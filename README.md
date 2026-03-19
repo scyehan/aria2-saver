@@ -13,6 +13,7 @@ A lightweight macOS menu bar app that acts as a browser proxy for aria2. Routes 
 - Download history with per-backend tabs
 - Path auto-completion from history (6 entries per backend)
 - Open completed files via SMB in Finder
+- Download from clipboard via menu or global hotkey (`⌘⇧D`)
 - YAML-based configuration
 - No Dock icon, lives in the menu bar
 
@@ -75,6 +76,14 @@ defaultBackendId: homelab
 4. Click "Download" to submit the task to aria2
 5. Monitor progress from the menu bar; click "Show Downloads..." for the full list
 6. Completed files can be opened via SMB directly from the download list
+
+You can also copy a URL and press `⌘⇧D` (or click "Download from Clipboard" in the menu) to start a download without going through a browser.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `⌘⇧D` | Download URL from clipboard |
 
 ## License
 

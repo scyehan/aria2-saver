@@ -43,6 +43,12 @@ struct MenuBarView: View {
 
             Divider().padding(.vertical, 4)
 
+            Button("Download from Clipboard  ⌘⇧D") {
+                NotificationCenter.default.post(name: .downloadFromClipboard, object: nil)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+
             Button("Show Downloads...") {
                 NotificationCenter.default.post(name: .showDownloadList, object: nil)
             }
@@ -71,4 +77,5 @@ struct MenuBarView: View {
 extension Notification.Name {
     static let reloadConfig = Notification.Name("reloadConfig")
     static let showDownloadList = Notification.Name("showDownloadList")
+    static let downloadFromClipboard = Notification.Name("downloadFromClipboard")
 }
