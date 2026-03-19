@@ -1,0 +1,43 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build -c release
+
+      - name: Package app bundle
+        run: |
+          APP=aria2-saver
+          BUILD_DIR=$(swift build -c release --show-bin-path)
+          BUNDLE=$BUILD_DIR/$APP.app
+          mkdir -p $BUNDLE/Contents/MacOS $BUNDLE/Contents/Resources
+          cp $BUILD_DIR/$APP $BUNDLE/Contents/MacOS/$APP
+          cp Resources/Info.plist $BUNDLE/Contents/Info.plist
+          cp Resources/AppIcon.icns $BUNDLE/Contents/Resources/AppIcon.icns
+          echo "APP_BUNDLE=$BUNDLE" >> $GITHUB_ENV
+
+      - name: Create DMG
+        run: |
+          DMG_NAME="aria2-saver-${GITHUB_REF_NAME}.dmg"
+          mkdir -p dmg_content
+          cp -r $APP_BUNDLE dmg_content/
+          ln -s /Applications dmg_content/Applications
+          hdiutil create -volname "aria2-saver" \
+            -srcfolder dmg_content \
+            -ov -format UDZO \
+            $DMG_NAME
+          echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.DMG_NAME }}
