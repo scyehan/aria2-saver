@@ -12,6 +12,7 @@
 - 路径历史自动补全（每个后端保存 10 条）
 - 下载完成后通过 SMB 在 Finder 中打开文件
 - 从剪贴板读取 URL 下载，支持全局快捷键 `⌘⇧D`
+- 可选的 HTTP 代理支持
 - YAML 配置文件
 - 仅驻留菜单栏，不显示 Dock 图标
 
@@ -53,7 +54,14 @@ backends:
     sambaHost: 192.168.1.200   # 可选，默认与 host 相同
 
 defaultBackendId: homelab
+
+proxies:                         # 可选
+  - label: my-proxy
+    host: 127.0.0.1
+    port: 8080
 ```
+
+**后端字段：**
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
@@ -65,6 +73,14 @@ defaultBackendId: homelab
 | `defaultDir` | 否 | 默认下载目录 |
 | `sambaPrefix` | 否 | SMB 路径前缀，用于在 Finder 中打开文件 |
 | `sambaHost` | 否 | SMB 服务器地址，不填则使用 `host` |
+
+**代理字段（可选）：**
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `label` | 是 | 代理显示名称 |
+| `host` | 是 | 代理服务器地址 |
+| `port` | 否 | 代理端口（默认 8080） |
 
 ## 使用方法
 

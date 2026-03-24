@@ -50,6 +50,11 @@ final class ConfigService {
             sambaPrefix: /share
 
         defaultBackendId: homelab
+
+        proxies:
+          - label: my-proxy
+            host: 127.0.0.1
+            port: 8080
         """
 
         fm.createFile(atPath: configFile.path, contents: example.data(using: .utf8))

@@ -7,10 +7,12 @@ final class DownloadDialogViewModel: ObservableObject {
     @Published var selectedBackend: Aria2Backend
     @Published var dir: String
     @Published var pathHistory: [String] = []
+    @Published var selectedProxy: ProxyConfig?
     @Published var isSubmitting = false
     @Published var errorMessage: String?
 
     let backends: [Aria2Backend]
+    let proxies: [ProxyConfig]
     private let rpcClient = Aria2RPCClient()
     /// Returns (gid, backend) on success, nil on cancel
     var onComplete: (@MainActor ((String, Aria2Backend)?) -> Void)?
@@ -18,6 +20,7 @@ final class DownloadDialogViewModel: ObservableObject {
     init(url: String, config: AppConfig) {
         self.url = url
         self.backends = config.backends
+        self.proxies = config.proxies ?? []
         let backend = config.defaultBackend ?? config.backends.first!
         self.selectedBackend = backend
         self.dir = backend.defaultDir
@@ -39,7 +42,8 @@ final class DownloadDialogViewModel: ObservableObject {
                 let gid = try await rpcClient.addUri(
                     backend: selectedBackend,
                     uris: [url],
-                    dir: dir
+                    dir: dir,
+                    proxy: selectedProxy
                 )
                 PathHistoryStore.shared.addPath(dir, for: selectedBackend.id)
                 onComplete?((gid, selectedBackend))

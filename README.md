@@ -14,6 +14,7 @@ A lightweight macOS menu bar app that acts as a browser proxy for aria2. Routes 
 - Path auto-completion from history (10 entries per backend)
 - Open completed files via SMB in Finder
 - Download from clipboard via menu or global hotkey (`⌘⇧D`)
+- Optional HTTP proxy support for downloads
 - YAML-based configuration
 - No Dock icon, lives in the menu bar
 
@@ -55,7 +56,14 @@ backends:
     sambaHost: 192.168.1.200   # optional, defaults to host
 
 defaultBackendId: homelab
+
+proxies:                         # optional
+  - label: my-proxy
+    host: 127.0.0.1
+    port: 8080
 ```
+
+**Backend fields:**
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -67,6 +75,14 @@ defaultBackendId: homelab
 | `defaultDir` | no | Default download directory |
 | `sambaPrefix` | no | SMB path prefix for opening files in Finder |
 | `sambaHost` | no | SMB server address, defaults to `host` |
+
+**Proxy fields (optional):**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `label` | yes | Display name for the proxy |
+| `host` | yes | Proxy server address |
+| `port` | no | Proxy port (default: 8080) |
 
 ## Usage
 

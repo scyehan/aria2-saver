@@ -32,6 +32,19 @@ struct DownloadDialogView: View {
                 ComboBox(text: $viewModel.dir, items: viewModel.pathHistory)
             }
 
+            if !viewModel.proxies.isEmpty {
+                LabeledContent("Proxy") {
+                    Picker("", selection: $viewModel.selectedProxy) {
+                        Text("No Proxy").tag(nil as ProxyConfig?)
+                        ForEach(viewModel.proxies) { proxy in
+                            Text("\(proxy.label) (\(proxy.host):\(proxy.port))")
+                                .tag(proxy as ProxyConfig?)
+                        }
+                    }
+                    .labelsHidden()
+                }
+            }
+
             if let error = viewModel.errorMessage {
                 Text(error)
                     .foregroundColor(.red)

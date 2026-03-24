@@ -21,8 +21,12 @@ struct Aria2RPCClient: Sendable {
         "downloadSpeed", "files",
     ] as [String]
 
-    func addUri(backend: Aria2Backend, uris: [String], dir: String) async throws -> String {
-        let params: [any Sendable] = buildParams(backend: backend, extra: [uris, ["dir": dir] as [String: String]])
+    func addUri(backend: Aria2Backend, uris: [String], dir: String, proxy: ProxyConfig? = nil) async throws -> String {
+        var options: [String: String] = ["dir": dir]
+        if let proxy {
+            options["all-proxy"] = proxy.proxyURL
+        }
+        let params: [any Sendable] = buildParams(backend: backend, extra: [uris, options])
         let result = try await call(backend: backend, method: "aria2.addUri", params: params)
         guard let gid = result as? String else {
             throw Aria2RPCError(message: "Unexpected response from aria2")
