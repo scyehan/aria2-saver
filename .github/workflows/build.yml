@@ -33,6 +33,9 @@ jobs:
           cp Resources/AppIcon.icns $BUNDLE/Contents/Resources/AppIcon.icns
           echo "APP_BUNDLE=$BUNDLE" >> $GITHUB_ENV
 
+      - name: Sign app (ad-hoc)
+        run: codesign --force --deep --sign - $APP_BUNDLE
+
       - name: Create DMG
         run: |
           DMG_NAME="aria2-saver-${GITHUB_REF_NAME}.dmg"
