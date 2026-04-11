@@ -21,8 +21,11 @@ struct Aria2RPCClient: Sendable {
         "downloadSpeed", "files",
     ] as [String]
 
-    func addUri(backend: Aria2Backend, uris: [String], dir: String, proxy: ProxyConfig? = nil) async throws -> String {
+    func addUri(backend: Aria2Backend, uris: [String], dir: String, out: String? = nil, proxy: ProxyConfig? = nil) async throws -> String {
         var options: [String: String] = ["dir": dir]
+        if let out {
+            options["out"] = out
+        }
         if let proxy {
             options["all-proxy"] = proxy.proxyURL
         }

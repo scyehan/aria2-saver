@@ -39,10 +39,13 @@ final class DownloadDialogViewModel: ObservableObject {
 
         Task {
             do {
+                let out = URL(string: url).map { $0.lastPathComponent }
+                    .flatMap { $0.isEmpty || $0 == "/" ? nil : $0 }
                 let gid = try await rpcClient.addUri(
                     backend: selectedBackend,
                     uris: [url],
                     dir: dir,
+                    out: out,
                     proxy: selectedProxy
                 )
                 PathHistoryStore.shared.addPath(dir, for: selectedBackend.id)

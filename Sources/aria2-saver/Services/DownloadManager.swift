@@ -13,6 +13,8 @@ final class DownloadManager: ObservableObject {
     private var backends: [String: Aria2Backend] = [:]
     private var pollTask: Task<Void, Never>?
     private var removingGids: Set<String> = []
+    private var pollFailCounts: [String: Int] = [:]
+    private static let maxPollFailures = 5
 
     private let defaults = UserDefaults.standard
     private let historyKey = "downloadHistory"
@@ -76,6 +78,7 @@ final class DownloadManager: ObservableObject {
     func removeActiveDownload(_ item: DownloadItem) {
         let gid = item.id
         removingGids.insert(gid)
+        pollFailCounts[gid] = nil
         activeDownloads.removeAll { $0.id == gid }
 
         guard let backend = backends[item.backendId] else {
@@ -125,12 +128,18 @@ final class DownloadManager: ObservableObject {
 
             do {
                 let info = try await rpcClient.tellStatus(backend: backend, gid: gid)
+                pollFailCounts[gid] = nil
                 updateItem(gid: gid, with: info)
             } catch {
-                if let idx = activeDownloads.firstIndex(where: { $0.id == gid }) {
-                    activeDownloads[idx].status = .error
-                    activeDownloads[idx].downloadSpeed = 0
-                    moveToHistory(gid: gid)
+                let count = (pollFailCounts[gid] ?? 0) + 1
+                pollFailCounts[gid] = count
+                if count >= Self.maxPollFailures {
+                    pollFailCounts[gid] = nil
+                    if let idx = activeDownloads.firstIndex(where: { $0.id == gid }) {
+                        activeDownloads[idx].status = .error
+                        activeDownloads[idx].downloadSpeed = 0
+                        moveToHistory(gid: gid)
+                    }
                 }
             }
         }

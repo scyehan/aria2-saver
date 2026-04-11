@@ -67,6 +67,12 @@ struct MenuBarView: View {
 
             Divider().padding(.vertical, 4)
 
+            Button("About aria2-saver") {
+                NotificationCenter.default.post(name: .showAbout, object: nil)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
             }
@@ -82,4 +88,5 @@ extension Notification.Name {
     static let reloadConfig = Notification.Name("reloadConfig")
     static let showDownloadList = Notification.Name("showDownloadList")
     static let downloadFromClipboard = Notification.Name("downloadFromClipboard")
+    static let showAbout = Notification.Name("showAbout")
 }

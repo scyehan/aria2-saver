@@ -27,6 +27,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self, selector: #selector(downloadFromClipboard),
             name: .downloadFromClipboard, object: nil
         )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(showAbout),
+            name: .showAbout, object: nil
+        )
 
         registerGlobalHotKey()
     }
@@ -112,6 +116,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.dialogPanel = newPanel
         newPanel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func showAbout() {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let buildDate: String = {
+            guard let execURL = Bundle.main.executableURL,
+                  let attrs = try? FileManager.default.attributesOfItem(atPath: execURL.path),
+                  let date = attrs[.modificationDate] as? Date else {
+                return "Unknown"
+            }
+            let fmt = DateFormatter()
+            fmt.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            return fmt.string(from: date)
+        }()
+
+        let credits = NSAttributedString(
+            string: "Build: \(buildDate)",
+            attributes: [.font: NSFont.systemFont(ofSize: 11),
+                         .foregroundColor: NSColor.secondaryLabelColor]
+        )
+
+        NSApp.activate(ignoringOtherApps: true)
+        NSApplication.shared.orderFrontStandardAboutPanel(options: [
+            .applicationName: "aria2-saver",
+            .applicationVersion: version,
+            .credits: credits,
+        ])
     }
 
     // MARK: - Global Hot Key (⌘⇧D)
