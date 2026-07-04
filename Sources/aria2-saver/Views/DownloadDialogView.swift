@@ -9,11 +9,25 @@ struct DownloadDialogView: View {
                 .font(.headline)
 
             LabeledContent("URL") {
-                Text(viewModel.url)
-                    .lineLimit(2)
-                    .truncationMode(.middle)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
+                TextField("", text: $viewModel.url)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
+            }
+
+            if viewModel.isGithubUrl {
+                LabeledContent("") {
+                    HStack(spacing: 6) {
+                        Toggle("GitHub proxy", isOn: $viewModel.useGithubProxy)
+                            .toggleStyle(.checkbox)
+                        if viewModel.useGithubProxy, let prefix = viewModel.githubProxyPrefix {
+                            Text(prefix)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
+                    }
+                }
             }
 
             LabeledContent("Backend") {

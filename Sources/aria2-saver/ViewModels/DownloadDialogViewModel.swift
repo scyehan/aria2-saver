@@ -10,17 +10,29 @@ final class DownloadDialogViewModel: ObservableObject {
     @Published var selectedProxy: ProxyConfig?
     @Published var isSubmitting = false
     @Published var errorMessage: String?
+    @Published var useGithubProxy: Bool = false
 
     let backends: [Aria2Backend]
     let proxies: [ProxyConfig]
+    let githubProxyPrefix: String?
     private let rpcClient = Aria2RPCClient()
     /// Returns (gid, backend) on success, nil on cancel
     var onComplete: (@MainActor ((String, Aria2Backend)?) -> Void)?
+
+    var isGithubUrl: Bool {
+        githubProxyPrefix != nil && url.lowercased().contains("github.com")
+    }
+
+    var effectiveUrl: String {
+        guard useGithubProxy, let prefix = githubProxyPrefix else { return url }
+        return prefix + url
+    }
 
     init(url: String, config: AppConfig) {
         self.url = url
         self.backends = config.backends
         self.proxies = config.proxies ?? []
+        self.githubProxyPrefix = config.githubProxyPrefix
         let backend = config.defaultBackend ?? config.backends.first!
         self.selectedBackend = backend
         self.dir = backend.defaultDir
@@ -39,11 +51,12 @@ final class DownloadDialogViewModel: ObservableObject {
 
         Task {
             do {
+                let downloadUrl = effectiveUrl
                 let out = URL(string: url).map { $0.lastPathComponent }
                     .flatMap { $0.isEmpty || $0 == "/" ? nil : $0 }
                 let gid = try await rpcClient.addUri(
                     backend: selectedBackend,
-                    uris: [url],
+                    uris: [downloadUrl],
                     dir: dir,
                     out: out,
                     proxy: selectedProxy
